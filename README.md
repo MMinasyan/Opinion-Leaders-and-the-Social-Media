@@ -1,6 +1,6 @@
 # Opinion-Leaders-and-the-Social-Media
 
-Research project analyzing public opinion formation during the campaign during the campaign.
+Research project analyzing public opinion formation during 2020 US pre-electoral campaign.
 
 Used methods: Sentiment analysis, Recurrent NNs, Structural vector autoregression, Impulse response analysis.
 
