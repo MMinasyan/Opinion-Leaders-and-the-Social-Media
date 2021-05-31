@@ -1,0 +1,72 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(vars)
+```
+
+```{r}
+df <- read.csv('Data\\final_data.csv')
+Y <- df[2:5]
+names(Y)
+```
+
+```{r}
+var.est1 <- VAR(Y, p = 3, type = c("const"))
+```
+
+```{r}
+a.mat <- diag(4)
+diag(a.mat) <- NA
+a.mat[2, 1] <- NA
+a.mat[4, 3] <- NA
+a.mat
+```
+
+# Impulse Responses
+
+## Creating the Impulse Response Data
+
+```{r}
+svar.one <- SVAR(var.est1, Amat = a.mat, max.iter = 10000, hessian = TRUE)
+one.int <- irf(svar.one, n.ahead = 14, ortho = TRUE, boot = TRUE, ci=0.8, runs=100, cumulative = FALSE)
+
+irf_df = data.frame(candidate_ol2candidate = one.int[["irf"]]$candidate_ol[,1], candidate2candidate_ol = one.int[["irf"]]$candidate[,2], party_ol2party = one.int[["irf"]]$party_ol[,3], party2party_ol = one.int[["irf"]]$party[,4])
+
+lower_df = data.frame(candidate_ol2candidate = one.int[["Lower"]]$candidate_ol[,1], candidate2candidate_ol = one.int[["Lower"]]$candidate[,2], party_ol2party = one.int[["Lower"]]$party_ol[,3], party2party_ol = one.int[["Lower"]]$party[,4])
+
+upper_df = data.frame(candidate_ol2candidate = one.int[["Upper"]]$candidate_ol[,1], candidate2candidate_ol = one.int[["Upper"]]$candidate[,2], party_ol2party = one.int[["Upper"]]$party_ol[,3], party2party_ol = one.int[["Upper"]]$party[,4])
+```
+
+## Saving the Impulse Response Data
+
+```{r}
+write.csv(irf_df, 'Data/ir_data/irf_df.csv')
+write.csv(lower_df, 'Data/ir_data/lower_df.csv')
+write.csv(upper_df, 'Data/ir_data/upper_df.csv')
+```
+
+# Cumulative Impulse Responses
+
+## Creating the Impulse Response Data
+
+```{r}
+svar.one <- SVAR(var.est1, Amat = a.mat, max.iter = 10000, hessian = TRUE)
+one.int <- irf(svar.one, n.ahead = 14, ortho = TRUE, boot = TRUE, ci=0.8, runs=100, cumulative = TRUE)
+
+irf_df = data.frame(candidate_ol2candidate = one.int[["irf"]]$candidate_ol[,1], candidate2candidate_ol = one.int[["irf"]]$candidate[,2], party_ol2party = one.int[["irf"]]$party_ol[,3], party2party_ol = one.int[["irf"]]$party[,4])
+
+lower_df = data.frame(candidate_ol2candidate = one.int[["Lower"]]$candidate_ol[,1], candidate2candidate_ol = one.int[["Lower"]]$candidate[,2], party_ol2party = one.int[["Lower"]]$party_ol[,3], party2party_ol = one.int[["Lower"]]$party[,4])
+
+upper_df = data.frame(candidate_ol2candidate = one.int[["Upper"]]$candidate_ol[,1], candidate2candidate_ol = one.int[["Upper"]]$candidate[,2], party_ol2party = one.int[["Upper"]]$party_ol[,3], party2party_ol = one.int[["Upper"]]$party[,4])
+```
+
+## Saving the Impulse Response Data
+
+```{r}
+write.csv(irf_df, 'Data/ir_data/cirf_df.csv')
+write.csv(lower_df, 'Data/ir_data/clower_df.csv')
+write.csv(upper_df, 'Data/ir_data/cupper_df.csv')
+```
